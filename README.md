@@ -4,8 +4,9 @@
 * Easily customize [the AI prompt](./.github/workflows/ai_code_review.py#L57) as needed.
 * Works with both Azure OpenAI and OpenAI APIs.
 * Add to any GitHub repo with only 3 files.
+* **[View Sample AI Code Review](https://github.com/mattsavarino/ai-code-review/pull/1)**
 
-## 3 Solution Files
+## Solution Files
 
 1. **[ai_code_review.yml](./.github/workflows/ai_code_review.yml)**<br>
 GitHub Actions file triggered upon pull request.
