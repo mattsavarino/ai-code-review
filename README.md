@@ -1,7 +1,7 @@
 # AI Code Review
 
 * Automatically generate an AI code review on every PR.
-* Easily customize [the AI prompt](./.github/workflows/ai_code_review.py#L57) as needed.
+* Easily customize [the AI prompt](./.github/workflows/ai_code_review.py#L144) as needed.
 * Works with both Azure OpenAI and OpenAI APIs.
 * Add to any GitHub repo with only 3 files.
 * **[View Sample AI Code Review](https://github.com/mattsavarino/ai-code-review/pull/1)**
