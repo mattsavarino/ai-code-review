@@ -1,0 +1,85 @@
+# Define name of workflow
+name: Azure AI Code Review
+
+# Trigger workflow on pull requests
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+# Grant write permissions to pull requests
+# Grant read permissions to repository contents
+permissions:
+  pull-requests: write 
+  contents: read
+
+jobs:
+  build:
+
+    # Define job name
+    name: Azure AI Code Review
+
+    # Define environment
+    runs-on: ubuntu-latest
+
+    steps:
+
+    # Checkout repository
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # Setup Python
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    # Install dependencies
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    # Run script
+    - name: Run Script
+      id: run_script
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        PR_NUMBER: ${{ github.event.pull_request.number }}
+        PR_TITLE: ${{ github.event.pull_request.title }}
+        PR_BODY: ${{ github.event.pull_request.body }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        OPENAI_MODEL_NAME: ${{ secrets.OPENAI_MODEL_NAME }}
+        AZURE_OPENAI_ENDPOINT: ${{ secrets.AZURE_OPENAI_ENDPOINT }}
+        AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+        AZURE_OPENAI_API_VERSION: ${{ secrets.AZURE_OPENAI_API_VERSION }}
+      run: |
+        script_output=$(python3 .github/workflows/ai_code_review.py)
+        echo "$script_output" > script_output.txt
+        echo "script_output<<EOF" >> $GITHUB_ENV
+        echo "$script_output" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+
+    # Post comment
+    - name: Post Comment
+      uses: actions/github-script@v7
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        script: |
+          const pr_number = context.payload.pull_request.number;
+          const script_output = process.env.script_output;
+          const comment = {
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: pr_number,
+            body: `AI Code Review\n${script_output}`
+          };
+          github.rest.issues.createComment(comment);
+
+    # Upload workflow logs
+    - name: Upload workflow logs
+      uses: actions/upload-artifact@v4
+      with:
+        name: workflow-log
+        path: workflow.log
