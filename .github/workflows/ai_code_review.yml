@@ -1,5 +1,5 @@
 # Define name of workflow
-name: Azure AI Code Review
+name: AI Code Review
 
 # Trigger workflow on pull requests
 on:
@@ -16,7 +16,7 @@ jobs:
   build:
 
     # Define job name
-    name: Azure AI Code Review
+    name: AI Code Review
 
     # Define environment
     runs-on: ubuntu-latest
